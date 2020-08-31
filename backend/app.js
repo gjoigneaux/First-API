@@ -8,6 +8,8 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 app.use(helmet());
+app.use(express.static('public'));
+
 
 mongoose.connect('mongodb+srv://gjoigneaux:Sinkos5993@cluster0.vgbyr.mongodb.net/<dbname>?retryWrites=true&w=majority',
   { useNewUrlParser: true,
