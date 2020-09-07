@@ -21,8 +21,8 @@ exports.createSauce = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         likes: 0,
         dislikes: 0,
-        usersLiked: [],
-        usersDisliked: []
+        usersLiked: "",
+        usersDisliked: ""
     });
     sauces.save()
         .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
@@ -55,10 +55,49 @@ exports.deleteSauce = (req, res, next) => {
 
 
 exports.likeSauce = (req, res, next) => {
-    const likes = JSON.parse(req.param.likes);
-    const usersLiked = JSON.parse(req.param.usersLiked);
-    sauce.updateOne({ _id: req.params.id }, {
-        likes: likes++,
-        usersLiked: usersLiked.push(req.body._id)
-    })
+    const userId = req.body.userId;
+    const like = req.body.like;
+    const sauceId = req.params.id;
+    if (like == 1) {  
+        sauce.update({ _id: sauceId },
+            {
+                $inc: { likes: 1 }, 
+                $push: { usersLiked: userId } 
+            })
+            .then(() => res.status(200).json({ message: 'L\' utilisateur aime la sauce' }))
+            .catch(error => res.status(404).json({ error }));
+    }
+    else if (like == -1) { 
+        sauce.update({ _id: sauceId },
+            {
+                $inc: { dislikes: 1 }, 
+                $push: { usersDisliked: userId } 
+            })
+            .then(() => res.status(200).json({ message: 'L\' utilisateur n\' aime pas la sauce' }))
+            .catch(error => res.status(404).json({ error }));
+    }
+    else { 
+        sauce.findOne({ _id: req.params.id })
+            .then((sauces) => {
+                if (sauces.usersDisliked.find(userId => userId === req.body.userId)) {
+                    sauce.update({ _id: sauceId },
+                        {
+                            $inc: { dislikes: -1 }, 
+                            $pull: { usersDisliked: userId } // 
+                        })
+                        .then(() => { res.status(200).json({ message: 'L\' utilisateur n\' aimais pas la sauce et il a changer d\' avis' }); })
+                        .catch(error => res.status(404).json({ error }));
+                }
+                else {
+                    sauce.update({ _id: sauceId },
+                        {
+                            $inc: { likes: -1 }, 
+                            $pull: { usersLiked: userId } 
+                        })
+                        .then(() => res.status(200).json({ message: 'L\' utilisateur aimais la sauce et il a changer d\' avis' }))
+                        .catch(error => res.status(404).json({ error }));
+                }
+            })
+            .catch(error => res.status(404).json({ error }));
+    };
 };
