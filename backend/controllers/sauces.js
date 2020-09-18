@@ -85,7 +85,7 @@ exports.likeSauce = (req, res, next) => {
                             $inc: { dislikes: -1 }, 
                             $pull: { usersDisliked: userId } // 
                         })
-                        .then(() => { res.status(200).json({ message: 'L\' utilisateur n\' aimais pas la sauce et il a changer d\' avis' }); })
+                        .then(() => res.status(200).json({ message: 'L\' utilisateur n\' aimais pas la sauce et il a changer d\' avis' }))
                         .catch(error => res.status(404).json({ error }));
                 }
                 else {
