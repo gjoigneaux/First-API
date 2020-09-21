@@ -22,7 +22,7 @@ Exécuter npm install.
 
 Exécuter node server ou nodemon server.
 
-Vous devais crée un .env pour générer votre token et votre base donnée.
+Vous devez crée un .env pour générer votre token et votre base donnée.
 
 Ex : 
 
