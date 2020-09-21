@@ -1,18 +1,22 @@
 const sauce = require('../models/sauces');
 const fs = require('fs');
 
+//Toutes les sauces
 exports.viewSauce = (req, res, next) => {
     sauce.find()
         .then(sauces => res.status(200).json(sauces))
         .catch(error => res.status(400).json({ error }));
 };
 
+//Une seule sauce
 exports.viewOneSauce = (req, res, next) => {
     sauce.findOne({ _id: req.params.id })
         .then(sauces => res.status(200).json(sauces))
         .catch(error => res.status(404).json({ error }));
 };
 
+
+//Crée une sauce
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
@@ -29,6 +33,7 @@ exports.createSauce = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 };
 
+//Modifier une sauce
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ?
         {
@@ -40,6 +45,7 @@ exports.modifySauce = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 };
 
+//Supprimer une sauce
 exports.deleteSauce = (req, res, next) => {
     sauce.findOne({ _id: req.params.id })
         .then(sauces => {
@@ -53,11 +59,12 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
-
+//Like sauce
 exports.likeSauce = (req, res, next) => {
     const userId = req.body.userId;
     const like = req.body.like;
     const sauceId = req.params.id;
+    //si Like = 1 ajout IDUSER dans arrayLike et incrementation dans Like
     if (like == 1) {  
         sauce.update({ _id: sauceId },
             {
@@ -67,6 +74,7 @@ exports.likeSauce = (req, res, next) => {
             .then(() => res.status(200).json({ message: 'L\' utilisateur aime la sauce' }))
             .catch(error => res.status(404).json({ error }));
     }
+    //si like = -1 ajout IDUSER dans ArrayDislike et incrementation dans dislike
     else if (like == -1) { 
         sauce.update({ _id: sauceId },
             {
@@ -76,6 +84,7 @@ exports.likeSauce = (req, res, next) => {
             .then(() => res.status(200).json({ message: 'L\' utilisateur n\' aime pas la sauce' }))
             .catch(error => res.status(404).json({ error }));
     }
+    //Sinon on verifie si IDUSER est dans un array si tel et le cas il doit enlever son avis pour pouvoir le changer donc retrait de sont avis dans array et dans -1 dans like ou dislike
     else { 
         sauce.findOne({ _id: req.params.id })
             .then((sauces) => {
