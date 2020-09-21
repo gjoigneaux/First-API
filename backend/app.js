@@ -14,7 +14,7 @@ app.use(helmet());
 app.use(express.static('public'));
 
 //Connexion a la base de donnée
-mongoose.connect('mongodb+srv://' + process.env.DBlog + ':' + process.env.DBpass + '@cluster0.vgbyr.mongodb.net/<dbname>?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://' + process.env.DBlog + ':' + process.env.DBpass + '@cluster0.vgbyr.mongodb.net/SoPekocko?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
